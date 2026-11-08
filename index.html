@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MiniSwiftApp</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #000; }
+    /* The renderer fits its canvas to this sized host element. */
+    #app { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <!--
+    REFERENCE APP SHELL — the canonical `dist/index.html` a web build (the compiler's
+    `web.c` target) emits. It EMBEDS the shared engine and wires it to this app's UIIR +
+    WASM. The build vendors `engine.min.js` (this repo's bundle) once, and emits `ui.json`
+    + `app.wasm` per app. See EMBED.md for the full contract.
+
+    The boot sequence itself is NOT written here. It used to be — render, link, bind,
+    spelled out in every shell — and this file, the compiler's emitter and Studio each
+    held their own copy of it. It lives in the engine now as window.bootMiniSwiftApp,
+    so a change to the sequence reaches every host that loads the bundle.
+  -->
+
+  <!--
+    data-ms-device is the packaged app's TARGET. A package has no device picker,
+    so the look it was built for has to be written down here or the app boots as
+    an iPhone whatever it was designed against. A packager (Studio's Export, the
+    compiler's --emit-web) sets it with a one-attribute rewrite; leave it as
+    "iphone" and this reference shell behaves exactly as it always did.
+  -->
+  <div id="app" data-ms-device="iphone"></div>
+
+  <!-- The RENDERER engine — this repo's `npm run build` output (dist/uiir-web.min.js),
+       vendored as engine.min.js. Installs window.bootMiniSwiftApp and friends. -->
+  <script src="./engine.min.js"></script>
+
+  <script type="module">
+    // Defaults are exactly this layout: ./ui.json, ./app.wasm, ./stdlib.wasm, #app.
+    await window.bootMiniSwiftApp();
+  </script>
+</body>
+</html>
